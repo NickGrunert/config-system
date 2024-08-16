@@ -15,7 +15,6 @@
         cheese # webcam tool
         gnome-music
         gnome-terminal
-        gedit # text editor
         epiphany # web browser
         geary # email reader
         evince # document viewer
@@ -40,7 +39,7 @@
   services = {
     xserver = {
       enable = true;
-      layout = "de";
+      xkb.layout = "de";
       displayManager.gdm = {
         enable = true;
         wayland = true;

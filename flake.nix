@@ -50,7 +50,7 @@
         inherit self nixpkgs userName userPassword;
         hostId = "eeae2b1c";
         hostName = "sussex";
-        stateVersion = "23.11";
+        stateVersion = "24.05";
         modules = [];
       };
     }
