@@ -4,6 +4,7 @@
 {
   config,
   lib,
+  pkgs,
   modulesPath,
   ...
 }: {
@@ -11,36 +12,35 @@
     (modulesPath + "/installer/scan/not-detected.nix")
   ];
 
-  boot = {
-    initrd = {
-      availableKernelModules = ["xhci_pci" "thunderbolt" "nvme" "usb_storage" "sd_mod" "rtsx_pci_sdmmc"];
-      kernelModules = [];
-    };
-    kernelModules = [];
-    extraModulePackages = [];
+  boot.initrd.availableKernelModules = ["xhci_pci" "thunderbolt" "nvme" "usb_storage" "sd_mod" "rtsx_pci_sdmmc"];
+  boot.initrd.kernelModules = [];
+  boot.kernelModules = [];
+  boot.extraModulePackages = [];
+
+  fileSystems."/" = {
+    device = "rpool/local/root";
+    fsType = "zfs";
   };
 
-  fileSystems = {
-    "/" = {
-      device = "rpool/local/root";
-      fsType = "zfs";
-    };
-    "/boot" = {
-      device = "/dev/disk/by-uuid/2A97-DFE5";
-      fsType = "vfat";
-    };
-    "/nix" = {
-      device = "rpool/local/nix";
-      fsType = "zfs";
-    };
-    "/home" = {
-      device = "rpool/safe/home";
-      fsType = "zfs";
-    };
-    "/persist" = {
-      device = "rpool/safe/persist";
-      fsType = "zfs";
-    };
+  fileSystems."/boot" = {
+    device = "/dev/disk/by-uuid/12CE-A600";
+    fsType = "vfat";
+    options = ["fmask=0022" "dmask=0022"];
+  };
+
+  fileSystems."/nix" = {
+    device = "rpool/local/nix";
+    fsType = "zfs";
+  };
+
+  fileSystems."/home" = {
+    device = "rpool/safe/home";
+    fsType = "zfs";
+  };
+
+  fileSystems."/persist" = {
+    device = "rpool/safe/persist";
+    fsType = "zfs";
   };
 
   swapDevices = [];
