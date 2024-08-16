@@ -17,9 +17,8 @@
   environment.systemPackages = [
     # only cuda 12+ support => other problems, hence broken at the moment
     # (pkgs.cudaPackages.tensorrt.override { autoAddDriverRunpath = pkgs.autoAddDriverRunpath; })
-    (pkgs.cudaPackages.cudnn.override {inherit (pkgs) autoAddDriverRunpath;})
-    (pkgs.cudaPackages.cutensor.override {inherit (pkgs) autoAddDriverRunpath;})
-    pkgs.autoAddDriverRunpath
+    pkgs.cudaPackages.cudnn
+    pkgs.cudaPackages.cutensor
     pkgs.cudaPackages.cuda_opencl
     pkgs.cudaPackages.cudatoolkit
     pkgs.linuxPackages.nvidia_x11
