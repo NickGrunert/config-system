@@ -1,50 +1,29 @@
 {
   config,
-  lib,
   pkgs,
   ...
-}: let
-  cfg = config.hosts.nvidia;
-in {
-  imports = [];
+}: {
+  imports = [./opengl.nix];
 
-  options.hosts.nvidia = {
-    enable = lib.mkOption {
-      type = lib.types.bool;
-      default = false;
-      description = "Enable NVIDIA drivers";
-    };
-    open = lib.mkOption {
-      type = lib.types.bool;
-      default = false;
-      description = "Open source drivers";
-    };
-    prime = lib.mkOption {
-      type = lib.types.attrs;
-      default = {};
-      description = "Enable NVIDIA PRIME";
-    };
+  hardware.nvidia = {
+    open = false;
+    modesetting.enable = true;
+    nvidiaSettings = true;
+    package = config.boot.kernelPackages.nvidiaPackages.stable;
   };
 
-  config = lib.mkIf cfg.enable {
-    environment.systemPackages = [
-      (pkgs.writeShellScriptBin "nvidia-offload" ''
-        export __NV_PRIME_RENDER_OFFLOAD=1
-        export __NV_PRIME_RENDER_OFFLOAD_PROVIDER=NVIDIA-G0
-        export __GLX_VENDOR_LIBRARY_NAME=nvidia
-        export __VK_LAYER_NV_optimus=NVIDIA_only
-        exec -a "$0" "$@"
-      '')
-    ];
+  services.xserver.videoDrivers = ["nvidia"];
 
-    hardware.nvidia = {
-      inherit (cfg) open prime;
-      # Useful and required for wayland compositors
-      modesetting.enable = true;
-      nvidiaSettings = true;
-      package = config.boot.kernelPackages.nvidiaPackages.stable;
-    };
+  environment.systemPackages = [
+    # only cuda 12+ support => other problems, hence broken at the moment
+    # (pkgs.cudaPackages.tensorrt.override { autoAddDriverRunpath = pkgs.autoAddDriverRunpath; })
+    (pkgs.cudaPackages.cudnn.override {inherit (pkgs) autoAddDriverRunpath;})
+    (pkgs.cudaPackages.cutensor.override {inherit (pkgs) autoAddDriverRunpath;})
+    pkgs.autoAddDriverRunpath
+    pkgs.cudaPackages.cuda_opencl
+    pkgs.cudaPackages.cudatoolkit
+    pkgs.linuxPackages.nvidia_x11
+  ];
 
-    services.xserver.videoDrivers = ["nvidia"];
-  };
+  virtualisation.docker.enableNvidia = false;
 }
