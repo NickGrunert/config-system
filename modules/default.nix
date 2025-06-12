@@ -82,6 +82,10 @@
     pcscd.enable = true;
   };
 
+  #systemd.services.docker.serviceConfig.Environment = [
+  #  "PATH=/run/current-system/sw/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+  #];
+
   fonts.packages = [
     pkgs.dejavu_fonts
     pkgs.cm_unicode

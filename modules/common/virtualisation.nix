@@ -28,15 +28,23 @@
     virtualisation.libvirtd.enable = config.hosts.virtualisation.libvirt.enable;
     programs.virt-manager.enable = config.hosts.virtualisation.libvirt.enable;
 
-    virtualisation.docker = {
-      inherit (config.hosts.virtualisation.docker) enable;
-      rootless = {
-        enable = true;
-        setSocketVariable = true;
-      };
-      extraOptions = ''--dns=8.8.8.8'';
+    fileSystems."/var/lib/docker-data" = {
+      device = "/var/lib/docker-store/docker.ext4.img";
+      fsType = "ext4";
+      options = ["loop"];
     };
 
+    virtualisation.docker = {
+      enable = true;
+      #rootless = {
+      #  enable = true;
+      #  setSocketVariable = true;
+      #};
+      daemon.settings = {
+        data-root = "/var/lib/docker-data";
+        dns = ["8.8.8.8"];
+      };
+    };
     users.users.${userName}.extraGroups =
       (
         if config.hosts.virtualisation.docker.enable

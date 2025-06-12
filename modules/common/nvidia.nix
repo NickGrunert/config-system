@@ -5,6 +5,17 @@
 }: {
   imports = [./opengl.nix];
 
+  hardware.nvidia.prime = {
+    offload = {
+      enable = true;
+      enableOffloadCmd = true;
+    };
+    # Make sure to use the correct Bus ID values for your system!
+    intelBusId = "PCI:0:1:0";
+    nvidiaBusId = "PCI:0:0:2";
+    # amdgpuBusId = "PCI:54:0:0"; For AMD GPU
+  };
+
   hardware.nvidia = {
     open = false;
     modesetting.enable = true;
